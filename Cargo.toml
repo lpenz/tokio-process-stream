@@ -1,0 +1,16 @@
+[package]
+name = "tokio-process-stream"
+description = "Simple crate that wraps a tokio::process into a tokio::stream"
+version = "0.1.0"
+authors = ["Leandro Lisboa Penz <lpenz@lpenz.org>"]
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/lpenz/tokio-process-stream"
+repository = "https://github.com/lpenz/tokio-process-stream"
+
+[dependencies]
+anyhow = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process"] }
+tokio-stream = { version = "0", features = ["io-util"] }
+pin-project-lite = "0"

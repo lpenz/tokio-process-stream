@@ -1,2 +1,54 @@
+[![CI](https://github.com/lpenz/tokio-process-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/lpenz/tokio-process-stream/actions/workflows/ci.yml)
+[![coveralls](https://coveralls.io/repos/github/lpenz/tokio-process-stream/badge.svg?branch=main)](https://coveralls.io/github/lpenz/tokio-process-stream?branch=main)
+[![crates.io](https://img.shields.io/crates/v/tokio-process-stream)](https://crates.io/crates/tokio-process-stream)
+
 # tokio-process-stream
-Simple crate that wraps a tokio::process into a tokio::stream
+
+tokio-process-stream is a simple crate that wraps a [`tokio::process`] into a
+[`tokio::stream`]
+
+Having a stream interface to processes is useful when we have multiple sources of data that
+we want to merge and start processing from a single entry point.
+
+This crate provides a [`tokio_stream::Stream`] wrapper for [`tokio::process::Child`].  The
+main struct is [`ProcessStream`], which implements the trait, yielding one [`Item`] enum at
+a time, each containing one line from either stdout ([`Item::Stdout`]) or stderr
+([`Item::Stderr`]) of the underlying process until it exits. At this point, the stream
+yields a single [`Item::Done`] and finishes.
+
+Example usage:
+
+```rust
+use tokio_process_stream::ProcessStream;
+use tokio::process::Command;
+use tokio_stream::StreamExt;
+use std::error::Error;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let mut sleep_cmd = Command::new("sleep");
+    sleep_cmd.args(&["1"]);
+    let ls_cmd = Command::new("ls");
+
+    let sleep_procstream = ProcessStream::try_from(sleep_cmd)?;
+    let ls_procstream = ProcessStream::try_from(ls_cmd)?;
+    let mut procstream = sleep_procstream.merge(ls_procstream);
+
+    while let Some(item) = procstream.next().await {
+        println!("{:?}", item);
+    }
+
+    Ok(())
+}
+```
+
+[`tokio::process`]: https://docs.rs/tokio/latest/tokio/process
+[`tokio::stream`]: https://docs.rs/futures-core/latest/futures_core/stream
+[`tokio_stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
+[`tokio::process::Child`]: https://docs.rs/tokio/latest/tokio/process/struct.Child.html
+[`ProcessStream`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/struct.ProcessStream.html
+[`Item`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html
+[`Item::Stdout`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Stdout
+[`Item::Stderr`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Stderr
+[`Item::Done`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Done
+
