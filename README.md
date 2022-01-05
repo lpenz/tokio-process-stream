@@ -1,6 +1,7 @@
 [![CI](https://github.com/lpenz/tokio-process-stream/actions/workflows/ci.yml/badge.svg)](https://github.com/lpenz/tokio-process-stream/actions/workflows/ci.yml)
 [![coveralls](https://coveralls.io/repos/github/lpenz/tokio-process-stream/badge.svg?branch=main)](https://coveralls.io/github/lpenz/tokio-process-stream?branch=main)
 [![crates.io](https://img.shields.io/crates/v/tokio-process-stream)](https://crates.io/crates/tokio-process-stream)
+[![doc.rs](https://docs.rs/tokio-process-stream/badge.svg)](https://docs.rs/tokio-process-stream)
 
 # tokio-process-stream
 
@@ -46,9 +47,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 [`tokio::stream`]: https://docs.rs/futures-core/latest/futures_core/stream
 [`tokio_stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
 [`tokio::process::Child`]: https://docs.rs/tokio/latest/tokio/process/struct.Child.html
-[`ProcessStream`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/struct.ProcessStream.html
-[`Item`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html
-[`Item::Stdout`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Stdout
-[`Item::Stderr`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Stderr
-[`Item::Done`]: https://docs.rs/tokio-process-stream/latest/tokio-process-stream/tokio_process_stream/enum.Item.html#variant.Done
+[`ProcessStream`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/struct.ProcessStream.html
+[`Item`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/enum.Item.html
+[`Item::Stdout`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/enum.Item.html#variant.Stdout
+[`Item::Stderr`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/enum.Item.html#variant.Stderr
+[`Item::Done`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/enum.Item.html#variant.Done
 
