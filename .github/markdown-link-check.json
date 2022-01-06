@@ -1,0 +1,10 @@
+{
+    "httpHeaders": [
+        {
+            "urls": ["https://crates.io/crates/tokio-process-stream"],
+            "headers": {
+                "Accept": "text/html"
+            }
+        }
+    ]
+}
