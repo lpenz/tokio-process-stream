@@ -48,6 +48,7 @@
 use pin_project_lite::pin_project;
 use std::convert;
 use std::fmt;
+use std::future::Future;
 use std::io;
 use std::pin::Pin;
 use std::process::ExitStatus;
@@ -154,13 +155,14 @@ impl Stream for ProcessStream {
             }
         }
         if this.stdout.is_none() && this.stderr.is_none() {
-            if let Some(ref mut child) = this.child {
-                if let Ok(Some(sts)) = child.try_wait() {
-                    *this.child = None;
-                    return Poll::Ready(Some(Item::Done(sts)));
-                } else {
-                    cx.waker().wake_by_ref();
+            // Streams closed, all that is left is waiting for the child to exit:
+            if let Some(mut child) = std::mem::take(&mut *this.child) {
+                if let Poll::Ready(sts) = Pin::new(&mut Box::pin(child.wait())).poll(cx) {
+                    return Poll::Ready(Some(Item::Done(sts.unwrap())));
                 }
+                // Sometimes the process can close stdout+stderr before it's ready to be
+                // 'wait'ed. To handle that, we put child back in this:
+                *this.child = Some(child);
             }
         }
         Poll::Pending

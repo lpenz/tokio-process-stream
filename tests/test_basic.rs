@@ -58,3 +58,18 @@ async fn basicerr() -> Result<()> {
     assert_eq!(procstream.next().await, None);
     Ok(())
 }
+
+#[tokio::test]
+async fn close_stds() -> Result<()> {
+    let mut cmd = Command::new("/bin/sh");
+    cmd.args(&["-c", "exec true 1>&- 2>&-"]);
+    let mut procstream = ProcessStream::try_from(cmd)?;
+    let exitstatus = procstream.next().await;
+    if let Some(Item::Done(sts)) = exitstatus {
+        assert!(sts.success());
+    } else {
+        panic!("invalid exit status {:?}", exitstatus);
+    }
+    assert_eq!(procstream.next().await, None);
+    Ok(())
+}
