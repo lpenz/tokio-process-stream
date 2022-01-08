@@ -4,11 +4,16 @@
 
 use tokio_process_stream::*;
 
+use anyhow::anyhow;
 use anyhow::Result;
 use std::convert::TryFrom;
 use std::process::Stdio;
 use tokio::process::Command;
 use tokio_stream::StreamExt;
+
+fn none2err<T>(opt: Option<T>) -> Result<T> {
+    opt.ok_or_else(|| anyhow!("unexpected None"))
+}
 
 #[tokio::test]
 async fn basicout() -> Result<()> {
@@ -18,21 +23,15 @@ async fn basicout() -> Result<()> {
     cmd.stderr(Stdio::piped());
     let child = cmd.spawn()?;
     let mut procstream = ProcessStream::from(child);
-    assert_eq!(
-        procstream.next().await,
-        Some(Item::Stdout("test1".to_owned()))
-    );
-    assert_eq!(
-        procstream.next().await,
-        Some(Item::Stdout("test2".to_owned()))
-    );
+    assert_eq!(none2err(procstream.next().await)?.stdout(), Some("test1"));
+    assert_eq!(none2err(procstream.next().await)?.stdout(), Some("test2"));
     let exitstatus = procstream.next().await;
     if let Some(Item::Done(sts)) = exitstatus {
-        assert!(sts.success());
+        assert!(sts?.success());
     } else {
         panic!("invalid exit status {:?}", exitstatus);
     }
-    assert_eq!(procstream.next().await, None);
+    assert!(procstream.next().await.is_none());
     Ok(())
 }
 
@@ -41,21 +40,15 @@ async fn basicerr() -> Result<()> {
     let mut cmd = Command::new("/bin/sh");
     cmd.args(&["-c", "printf 'test1\ntest2' >&2"]);
     let mut procstream = ProcessStream::try_from(cmd)?;
-    assert_eq!(
-        procstream.next().await,
-        Some(Item::Stderr("test1".to_owned()))
-    );
-    assert_eq!(
-        procstream.next().await,
-        Some(Item::Stderr("test2".to_owned()))
-    );
+    assert_eq!(none2err(procstream.next().await)?.stderr(), Some("test1"));
+    assert_eq!(none2err(procstream.next().await)?.stderr(), Some("test2"));
     let exitstatus = procstream.next().await;
     if let Some(Item::Done(sts)) = exitstatus {
-        assert!(sts.success());
+        assert!(sts?.success());
     } else {
         panic!("invalid exit status {:?}", exitstatus);
     }
-    assert_eq!(procstream.next().await, None);
+    assert!(procstream.next().await.is_none());
     Ok(())
 }
 
@@ -66,10 +59,10 @@ async fn close_stds() -> Result<()> {
     let mut procstream = ProcessStream::try_from(cmd)?;
     let exitstatus = procstream.next().await;
     if let Some(Item::Done(sts)) = exitstatus {
-        assert!(sts.success());
+        assert!(sts?.success());
     } else {
         panic!("invalid exit status {:?}", exitstatus);
     }
-    assert_eq!(procstream.next().await, None);
+    assert!(procstream.next().await.is_none());
     Ok(())
 }

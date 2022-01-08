@@ -64,14 +64,33 @@ use tokio_stream::wrappers::LinesStream;
 use tokio_stream::Stream;
 
 /// [`ProcessStream`] yields a stream of `Items`.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum Item {
     /// A stdout line printed by the process.
     Stdout(String),
     /// A stderr line printed by the process.
     Stderr(String),
     /// The [`ExitStatus`](std::process::ExitStatus), yielded after the process exits.
-    Done(ExitStatus),
+    Done(io::Result<ExitStatus>),
+}
+
+impl Item {
+    /// Returns a reference to the inner string for [`Item::Stdout`]; otherwise, return None
+    pub fn stdout(&self) -> Option<&str> {
+        if let Item::Stdout(ref s) = self {
+            Some(s)
+        } else {
+            None
+        }
+    }
+    /// Returns a reference to the inner string for [`Item::Stderr`]; otherwise, return None
+    pub fn stderr(&self) -> Option<&str> {
+        if let Item::Stderr(ref s) = self {
+            Some(s)
+        } else {
+            None
+        }
+    }
 }
 
 impl fmt::Display for Item {
@@ -158,7 +177,7 @@ impl Stream for ProcessStream {
             // Streams closed, all that is left is waiting for the child to exit:
             if let Some(mut child) = std::mem::take(&mut *this.child) {
                 if let Poll::Ready(sts) = Pin::new(&mut Box::pin(child.wait())).poll(cx) {
-                    return Poll::Ready(Some(Item::Done(sts.unwrap())));
+                    return Poll::Ready(Some(Item::Done(sts)));
                 }
                 // Sometimes the process can close stdout+stderr before it's ready to be
                 // 'wait'ed. To handle that, we put child back in this:
