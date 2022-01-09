@@ -11,7 +11,7 @@ tokio-process-stream is a simple crate that wraps a [`tokio::process`] into a
 Having a stream interface to processes is useful when we have multiple sources of data that
 we want to merge and start processing from a single entry point.
 
-This crate provides a [`tokio_stream::Stream`] wrapper for [`tokio::process::Child`].  The
+This crate provides a [`core::stream::Stream`] wrapper for [`tokio::process::Child`]. The
 main struct is [`ProcessStream`], which implements the trait, yielding one [`Item`] enum at
 a time, each containing one line from either stdout ([`Item::Stdout`]) or stderr
 ([`Item::Stderr`]) of the underlying process until it exits. At this point, the stream
@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 [`tokio::process`]: https://docs.rs/tokio/latest/tokio/process
 [`tokio::stream`]: https://docs.rs/futures-core/latest/futures_core/stream
-[`tokio_stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
+[`core::stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
 [`tokio::process::Child`]: https://docs.rs/tokio/latest/tokio/process/struct.Child.html
 [`ProcessStream`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/struct.ProcessStream.html
 [`Item`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/enum.Item.html

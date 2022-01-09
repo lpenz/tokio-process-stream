@@ -13,7 +13,7 @@
 //! Having a stream interface to processes is useful when we have multiple sources of data that
 //! we want to merge and start processing from a single entry point.
 //!
-//! This crate provides a [`tokio_stream::Stream`] wrapper for [`tokio::process::Child`].  The
+//! This crate provides a [`core::stream::Stream`] wrapper for [`tokio::process::Child`]. The
 //! main struct is [`ProcessStream`], which implements the trait, yielding one [`Item`] enum at
 //! a time, each containing one line from either stdout ([`Item::Stdout`]) or stderr
 //! ([`Item::Stderr`]) of the underlying process until it exits. At this point, the stream
