@@ -12,5 +12,7 @@ repository = "https://github.com/lpenz/tokio-process-stream"
 [dependencies]
 anyhow = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "process"] }
-tokio-stream = { version = "0", features = ["io-util"] }
-pin-project-lite = "0"
+tokio-stream = { version = "0.1.8", features = ["io-util"] }
+tokio-util = { version = "0.6.9", features = ["io"] }
+pin-project-lite = "0.2.8"
+bytes = "1"
