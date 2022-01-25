@@ -62,16 +62,8 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
-  markdown-link-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: gaurav-nelson/github-action-markdown-link-check@1.0.13
-        with:
-          use-verbose-mode: yes
-          config-file: '.github/markdown-link-check.json'
   publish-crate:
-    needs: [ omnilint, cargo-check-doc, test-coverage, rustfmt, clippy, markdown-link-check ]
+    needs: [ omnilint, cargo-check-doc, test-coverage, rustfmt, clippy ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
