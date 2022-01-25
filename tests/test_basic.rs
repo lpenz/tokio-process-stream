@@ -4,10 +4,8 @@
 
 use tokio_process_stream::*;
 
-use anyhow::anyhow;
-use anyhow::Result;
-use std::convert::TryFrom;
-use std::process::Stdio;
+use anyhow::{anyhow, Result};
+use std::{convert::TryFrom, process::Stdio};
 use tokio::process::Command;
 use tokio_stream::StreamExt;
 
@@ -17,11 +15,11 @@ fn none2err<T>(opt: Option<T>) -> Result<T> {
 
 #[tokio::test]
 async fn basicout() -> Result<()> {
-    let mut cmd = Command::new("/bin/sh");
-    cmd.args(&["-c", "printf 'test1\ntest2'"]);
-    cmd.stdout(Stdio::piped());
-    cmd.stderr(Stdio::piped());
-    let child = cmd.spawn()?;
+    let child = Command::new("/bin/sh")
+        .args(&["-c", "printf 'test1\ntest2'"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()?;
     let mut procstream = ProcessStream::from(child);
     assert_eq!(none2err(procstream.next().await)?.stdout(), Some("test1"));
     assert_eq!(none2err(procstream.next().await)?.stdout(), Some("test2"));
@@ -64,5 +62,28 @@ async fn close_stds() -> Result<()> {
         panic!("invalid exit status {:?}", exitstatus);
     }
     assert!(procstream.next().await.is_none());
+    Ok(())
+}
+
+#[tokio::test]
+async fn chunk_stream() -> Result<()> {
+    let mut procstream: ProcessChunkStream = Command::new("/bin/sh")
+        .arg("-c")
+        .arg(r#"printf "1/10"; sleep 0.1; printf "\r5/10"; sleep 0.1; printf "\r10/10 done\n""#)
+        .try_into()?;
+
+    assert_eq!(
+        procstream.next().await.as_ref().and_then(|n| n.stdout()),
+        Some(b"1/10" as _)
+    );
+    assert_eq!(
+        procstream.next().await.as_ref().and_then(|n| n.stdout()),
+        Some(b"\r5/10" as _)
+    );
+    assert_eq!(
+        procstream.next().await.as_ref().and_then(|n| n.stdout()),
+        Some(b"\r10/10 done\n" as _)
+    );
+    assert!(matches!(procstream.next().await, Some(Item::Done(_))));
     Ok(())
 }
