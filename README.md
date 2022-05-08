@@ -11,9 +11,9 @@ tokio-process-stream is a simple crate that wraps a [`tokio::process`] into a
 Having a stream interface to processes is useful when we have multiple sources of data that
 we want to merge and start processing from a single entry point.
 
-This crate provides a [`core::stream::Stream`] wrapper for [`tokio::process::Child`]. The
-main struct is [`ProcessLineStream`], which implements the trait, yielding one [`Item`] enum at
-a time, each containing one line from either stdout ([`Item::Stdout`]) or stderr
+This crate provides a [`futures::stream::Stream`] wrapper for [`tokio::process::Child`]. The
+main struct is [`ProcessLineStream`], which implements the trait, yielding one [`Item`] enum
+at a time, each containing one line from either stdout ([`Item::Stdout`]) or stderr
 ([`Item::Stderr`]) of the underlying process until it exits. At this point, the stream
 yields a single [`Item::Done`] and finishes.
 
@@ -44,26 +44,32 @@ async fn main() -> Result<(), Box<dyn Error>> {
 ```
 
 ## Streaming chunks
+
 It is also possible to stream `Item<Bytes>` chunks with [`ProcessChunkStream`].
 
 ```rust
 use tokio_process_stream::{Item, ProcessChunkStream};
 use tokio::process::Command;
 use tokio_stream::StreamExt;
+use std::error::Error;
 
-let mut procstream: ProcessChunkStream = Command::new("/bin/sh")
-    .arg("-c")
-    .arg(r#"printf "1/2"; sleep 0.1; printf "\r2/2 done\n""#)
-    .try_into()?;
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let mut procstream: ProcessChunkStream = Command::new("/bin/sh")
+        .arg("-c")
+        .arg(r#"printf "1/2"; sleep 0.1; printf "\r2/2 done\n""#)
+        .try_into()?;
 
-while let Some(item) = procstream.next().await {
-    println!("{:?}", item);
+    while let Some(item) = procstream.next().await {
+        println!("{:?}", item);
+    }
+    Ok(())
 }
 ```
 
 [`tokio::process`]: https://docs.rs/tokio/latest/tokio/process
 [`tokio::stream`]: https://docs.rs/futures-core/latest/futures_core/stream
-[`core::stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
+[`futures::stream::Stream`]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
 [`tokio::process::Child`]: https://docs.rs/tokio/latest/tokio/process/struct.Child.html
 [`ProcessLineStream`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/struct.ProcessLineStream.html
 [`ProcessChunkStream`]: https://docs.rs/tokio-process-stream/latest/tokio_process_stream/struct.ProcessChunkStream.html

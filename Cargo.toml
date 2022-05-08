@@ -8,11 +8,14 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/lpenz/tokio-process-stream"
 repository = "https://github.com/lpenz/tokio-process-stream"
+categories = ["asynchronous"]
+keywords = ["tokio", "stream", "async-stream", "process"]
 
 [dependencies]
-anyhow = "1"
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "process"] }
+anyhow = "1.0.57"
+tokio = { version = "1.18.1", features = ["macros", "rt-multi-thread", "process"] }
 tokio-stream = { version = "0.1.8", features = ["io-util"] }
-tokio-util = { version = "0.6.9", features = ["io"] }
-pin-project-lite = "0.2.8"
-bytes = "1"
+tokio-util = { version = "0.7.1", features = ["io"] }
+pin-project-lite = "0.2.9"
+bytes = "1.1.0"
+futures = "0.3.21"
