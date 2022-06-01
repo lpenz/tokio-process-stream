@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: docker://lpenz/omnilint:v0.2
+      - uses: docker://lpenz/omnilint:0.4
   # Rust actions from:
   # https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
   cargo-check-doc:
