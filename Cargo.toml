@@ -1,7 +1,7 @@
 [package]
 name = "tokio-process-stream"
 description = "Simple crate that wraps a tokio::process into a tokio::stream"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Leandro Lisboa Penz <lpenz@lpenz.org>"]
 edition = "2021"
 license = "MIT"
@@ -13,9 +13,9 @@ keywords = ["tokio", "stream", "async-stream", "process"]
 
 [dependencies]
 anyhow = "1.0.57"
-tokio = { version = "1.18.1", features = ["macros", "rt-multi-thread", "process"] }
+tokio = { version = "1.18.2", features = ["macros", "rt-multi-thread", "process"] }
 tokio-stream = { version = "0.1.8", features = ["io-util"] }
-tokio-util = { version = "0.7.1", features = ["io"] }
+tokio-util = { version = "0.7.2", features = ["io"] }
 pin-project-lite = "0.2.9"
 bytes = "1.1.0"
 futures = "0.3.21"
