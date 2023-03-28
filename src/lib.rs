@@ -138,6 +138,18 @@ pub struct ChildStream<Sout, Serr> {
 }
 }
 
+impl<Sout, Serr> ChildStream<Sout, Serr> {
+    /// Return a reference to the child object
+    pub fn child(&self) -> Option<&Child> {
+        self.child.as_ref()
+    }
+
+    /// Return a mutable reference to the child object
+    pub fn child_mut(&mut self) -> Option<&mut Child> {
+        self.child.as_mut()
+    }
+}
+
 impl<Sout, Serr> TryFrom<Command> for ChildStream<Sout, Serr>
 where
     ChildStream<Sout, Serr>: From<Child>,
