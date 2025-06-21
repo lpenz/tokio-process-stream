@@ -82,7 +82,7 @@ use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::{Child, ChildStderr, ChildStdout, Command},
 };
-use tokio_stream::{wrappers::LinesStream, Stream};
+use tokio_stream::{Stream, wrappers::LinesStream};
 use tokio_util::io::ReaderStream;
 
 /// [`ProcessStream`] output.
@@ -92,7 +92,7 @@ pub enum Item<Out> {
     Stdout(Out),
     /// A stderr chunk printed by the process.
     Stderr(Out),
-    /// The [`ExitStatus`](std::process::ExitStatus), yielded after the process exits.
+    /// The [`ExitStatus`], yielded after the process exits.
     Done(io::Result<ExitStatus>),
 }
 

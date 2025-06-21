@@ -4,7 +4,7 @@
 
 use tokio_process_stream::*;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use std::{convert::TryFrom, process::Stdio};
 use tokio::process::Command;
 use tokio_stream::StreamExt;
